@@ -17,12 +17,27 @@
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const server = require('./src/app.js');
-const { conn } = require('./src/db.js');
+const server = require("./src/app.js");
+const { conn } = require("./src/db.js");
+const { Diet } = require("./src/db.js");
 
 // Syncing all the models at once.
-conn.sync({ force: true }).then(() => {
+const force = { force: true };
+
+conn.sync(force).then(() => {
   server.listen(3001, () => {
-    console.log('%s listening at 3001'); // eslint-disable-line no-console
+    console.log("%s listening at 3001"); // eslint-disable-line no-console
   });
+
+  if (force.force) {
+    const dietsTypes = ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Low FODMAP", "Whole30"];
+    let dietId = 0;
+    const promisedDiets = dietsTypes.map((diet) => {
+      dietId++;
+      return Diet.create({ id: dietId, name: diet });
+    });
+    Promise.all(promisedDiets)
+      .then(() => console.log("--------------Diets were loaded in DB!--------------"))
+      .catch((err) => console.log({ m: "Something went wrong when creating diets in database.", err }));
+  }
 });

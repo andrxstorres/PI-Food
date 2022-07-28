@@ -2,21 +2,23 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const { Recipe, Diet } = require("../db.js");
+const { Op } = require("sequelize");
+require("dotenv").config();
+const { API_KEY, API_KEY_K } = process.env;
 
 router.get("/", (req, res) => {
   const searchByName = req.query.name;
 
-  if (searchByName) {
+  if (searchByName === ``) {
+    res.status(400).send({ m: "Trying to search by name with an empty string", from: "GET /recipes?name" });
+  } else if (searchByName) {
     //fetch a la API buscando coincidencias de nombre
     axios
-      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=6bc475026bcd455186559e57512957ee&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
       .then((response) => {
-        const results = response.data.results;
+        const { results, totalResults } = response.data;
         const allNameMatchedAPIRecipes = results.map((recipe) => {
-          const { id, image, title, healthScore, dishTypes, diets, summary, } = recipe;
-          // const instructions = analyzedInstructions[0];
-          // const stepsString = ``;
-          // instructions.steps.map((s) => console.log(s.step));
+          const { id, image, title, healthScore, dishTypes, diets, summary } = recipe;
 
           const nameMatchedAPIRecipe = {
             id,
@@ -30,28 +32,48 @@ router.get("/", (req, res) => {
           return nameMatchedAPIRecipe;
         });
 
-        //busqueda en la DB por coincidencia de nombre
+        //busqueda en la DB por coincidencia de nombre sin criterio de minusculas
         Recipe.findAll({
           where: {
             name: {
               [Op.iLike]: `%${searchByName}%`,
             },
           },
-        });
-        res.send(allNameMatchedAPIRecipes);
+          include: [
+            {
+              model: Diet,
+              through: { diets: [] },
+            },
+          ],
+        })
+          .then((allNameMatchedDBRecipes) => {
+            let totalDBResults = 0;
+            allNameMatchedDBRecipes.forEach(() => {
+              totalDBResults += 1;
+            });
+            //construimos el objet respuesta final con todas las coincidencias
+            const searchByNameResponse = {
+              totalAPIResults: totalResults,
+              totalDBResults,
+              allNameMatchedRecipes: [...allNameMatchedAPIRecipes, ...allNameMatchedDBRecipes],
+            };
+            res.send(searchByNameResponse);
+          })
+          .catch((err) => res.status(400).send({ m: `An error ocurred while searching by name '${searchByName}' in DB.`, from: "GET /recipes?name", err }));
       })
       .catch((err) => res.status(400).send({ m: "Something went wrong when seraching by name in '/recipes'", err }));
   } else {
-    // fetch de 100 resultados a la API
+    // fetch a la API de los primeros 100 resultados
     axios
-      .get("https://api.spoonacular.com/recipes/complexSearch?apiKey=6bc475026bcd455186559e57512957ee&addRecipeInformation=true&number=100")
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100`)
       .then((response) => {
         const results = response.data.results;
         const allAPIRecipes = results.map((recipe) => {
-          const { image, title, healthScore, dishTypes, diets, summary, analyzedInstructions } = recipe;
+          const { id, image, title, healthScore, dishTypes, diets, summary, analyzedInstructions } = recipe;
           const instructions = analyzedInstructions[0];
 
           const apiRecipeToHome = {
+            id,
             image,
             title,
             dishTypes,
@@ -89,35 +111,50 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  const searchId = req.params.id
-  
-  const isUUID = Number(searchId)
-  if(isNaN(isUUID)){
-    Recipe.findByPk(searchId)
-    .then( detailedDBRecipe => {
-      res.send(detailedDBRecipe)
-    })
-    .catch( err => res.status(400).send({m: "An error ocurred when searching by UUID in the DB", from: "GET /recipes/:id", err}))
-  } else {
-  axios.get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=6bc475026bcd455186559e57512957ee`)
-  .then(response => {
-    const { id, image, title, dishTypes, diets, summary, healthScore, instructions } = response.data
+  const searchId = req.params.id;
 
-    const detailedRecipe = {
-      id,
-      image,
-      title,
-      dishTypes,
-      diets,
-      summary,
-      healthScore,
-      instructions
-    }
-    res.send(detailedRecipe)
-  })
-  .catch(err => res.status(400).send({m: `An error ocurred while querying API recipe details by '${searchId}'.`, from: "GET /recipes/:id", err }))
+  const isID = Number(searchId);
+  //la siguiente valdación puede hacerse tambien como !isUUID,
+  // cuya logica (decir que no es un UUID)implicaría rotar de lugar los dos bloques de codigo siguientes:
+  // el que corresponde a la busqeda por uuid y el que corresponde a la busqueda por id.
+  if (!isID) {
+    Recipe.findByPk(searchId, {
+      include: [
+        {
+          model: Diet,
+          through: { diets: [] },
+        },
+      ],
+    })
+      .then((detailedDBRecipe) => {
+        if (detailedDBRecipe) {
+          return res.send(detailedDBRecipe);
+        } else {
+          res.status(400).send({ m: `The specified UUID does not match any recipe's PK in DB`, uuid: `${searchId}` });
+        }
+      })
+      .catch((err) => res.status(400).send({ m: "An error ocurred when searching by UUID in the DB", from: "GET /recipes/:id", err }));
+  } else {
+    axios
+      .get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=${API_KEY_K}`)
+      .then((response) => {
+        const { id, image, title, dishTypes, diets, summary, healthScore, instructions } = response.data;
+
+        const detailedRecipe = {
+          id,
+          image,
+          title,
+          dishTypes,
+          diets,
+          summary,
+          healthScore,
+          instructions,
+        };
+        res.send(detailedRecipe);
+      })
+      .catch((err) => res.status(400).send({ m: `An error ocurred while querying API recipe details by '${searchId}'.`, from: "GET /recipes/:id", err }));
   }
-})
+});
 
 router.post("/", (req, res) => {
   const { name, description, healthScore, steps, diets } = req.body;

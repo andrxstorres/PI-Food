@@ -13,8 +13,8 @@ router.get("/", (req, res) => {
       .then((response) => {
         const results = response.data.results;
         const allNameMatchedAPIRecipes = results.map((recipe) => {
-          const { id, image, title, healthScore, dishTypes, diets, summary, analyzedInstructions } = recipe;
-          const instructions = analyzedInstructions[0];
+          const { id, image, title, healthScore, dishTypes, diets, summary, } = recipe;
+          // const instructions = analyzedInstructions[0];
           // const stepsString = ``;
           // instructions.steps.map((s) => console.log(s.step));
 
@@ -26,7 +26,6 @@ router.get("/", (req, res) => {
             diets,
             summary,
             healthScore,
-            stepsObj: instructions,
           };
           return nameMatchedAPIRecipe;
         });
@@ -88,6 +87,37 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(400).send({ m: "Something went wrong when loading the recipes to Home", from: " POST /recipes", err }));
   }
 });
+
+router.get("/:id", (req, res) => {
+  const searchId = req.params.id
+  
+  const isUUID = Number(searchId)
+  if(isNaN(isUUID)){
+    Recipe.findByPk(searchId)
+    .then( detailedDBRecipe => {
+      res.send(detailedDBRecipe)
+    })
+    .catch( err => res.status(400).send({m: "An error ocurred when searching by UUID in the DB", from: "GET /recipes/:id", err}))
+  } else {
+  axios.get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=6bc475026bcd455186559e57512957ee`)
+  .then(response => {
+    const { id, image, title, dishTypes, diets, summary, healthScore, instructions } = response.data
+
+    const detailedRecipe = {
+      id,
+      image,
+      title,
+      dishTypes,
+      diets,
+      summary,
+      healthScore,
+      instructions
+    }
+    res.send(detailedRecipe)
+  })
+  .catch(err => res.status(400).send({m: `An error ocurred while querying API recipe details by '${searchId}'.`, from: "GET /recipes/:id", err }))
+  }
+})
 
 router.post("/", (req, res) => {
   const { name, description, healthScore, steps, diets } = req.body;

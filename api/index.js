@@ -30,7 +30,20 @@ conn.sync(force).then(() => {
   });
 
   if (force.force) {
-    const dietsTypes = ["Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Low FODMAP", "Whole30"];
+    const dietsTypes = [
+      "gluten free",
+      "ketogenic",
+      "vegetarian",
+      // "lacto vegetarian",
+      // "ovo vegetarian",
+      "lacto ovo vegetarian",
+      "vegan",
+      "pescatarian",
+      "paleolithic",
+      "primal",
+      "fodmap friendly",
+      "whole 30",
+    ];
     let dietId = 0;
     const promisedDiets = dietsTypes.map((diet) => {
       dietId++;

@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getHomeRecipes } from "../../redux/actions.js";
 import HomeCardsContainer from "../../components/HomeCardsContainer/index.jsx";
 import { HomeNavBar } from "../../components/HomeNavBar/index.jsx";
+import HomeFilterBar from "../../components/HomeFilterBar/index.jsx";
 
 export default function Home() {
   const dispatch = useDispatch();
 
   useEffect(() => dispatch(getHomeRecipes()), [dispatch]);
 
-  const allHomeRecipes = useSelector((state) => state.recipes);
+  const allHomeRecipes = useSelector((state) => state.recipesForHome);
   const noNameMatchesFoundError = useSelector((state) => state.noNameMatchError);
 
   return (
@@ -17,6 +18,8 @@ export default function Home() {
       <h1>Recipehub.</h1>
       <br />
       <HomeNavBar />
+      <hr />
+      <HomeFilterBar />
       <br />
       {noNameMatchesFoundError === "NO_NAME_MATCHES_FOUND" ? (
         <nav>

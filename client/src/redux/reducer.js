@@ -1,7 +1,18 @@
-import { GET_HOME_RECIPES, GET_RECIPES_BY_NAME, NO_NAME_MATCHES_FOUND, GET_DETAIL_BY_ID, GET_DIETS_FROM_DB, POST_RECIPE_IN_DB } from "./actions.js";
+import {
+  GET_HOME_RECIPES,
+  GET_RECIPES_BY_NAME,
+  NO_NAME_MATCHES_FOUND,
+  GET_DETAIL_BY_ID,
+  GET_DIETS_FROM_DB,
+  POST_RECIPE_IN_DB,
+  FILTER_HOME_BY_DIET,
+  SORT_HOME_BY_HEALTHSCORE,
+  SORT_HOME_ALPHABETICALLY,
+} from "./actions.js";
 
 const initialState = {
   recipes: [],
+  recipesForHome: [],
   details: {},
   dbDiets: [],
   newRecipe: {},
@@ -14,12 +25,14 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         recipes: [...action.payload],
+        recipesForHome: [...action.payload],
         noNameMatchError: "",
       };
     case GET_RECIPES_BY_NAME:
       return {
         ...state,
         recipes: [...action.payload],
+        recipesForHome: [...action.payload],
         noNameMatchError: "",
       };
     case NO_NAME_MATCHES_FOUND:
@@ -41,6 +54,21 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         newRecipe: { ...action.payload },
+      };
+    case FILTER_HOME_BY_DIET:
+      return {
+        ...state,
+        recipesForHome: [...action.payload],
+      };
+    case SORT_HOME_BY_HEALTHSCORE:
+      return {
+        ...state,
+        recipesForHome: [...action.payload],
+      };
+    case SORT_HOME_ALPHABETICALLY:
+      return {
+        ...state,
+        recipesForHome: [...action.payload],
       };
     default:
       return state;

@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
   } else if (searchByName) {
     //fetch a la API buscando coincidencias de nombre
     axios
-      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_L}&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
       .then((response) => {
         const { results, totalResults } = response.data;
         const allNameMatchedAPIRecipes = results.map((recipe) => {
@@ -53,7 +53,7 @@ router.get("/", (req, res) => {
             });
             // filtramos el objeto de la DB, principalmente el array "diets"
             const filteredNameMatchedDBRecipes = allNameMatchedDBRecipes.map((nameMatchedDbRecipe) => {
-              const { id, name, diets } = nameMatchedDbRecipe;
+              const { id, name, diets, healthScore } = nameMatchedDbRecipe;
 
               const filteredDiets = diets.map((dietObj) => dietObj.name);
 
@@ -61,6 +61,7 @@ router.get("/", (req, res) => {
                 id,
                 title: name,
                 diets: filteredDiets,
+                healthScore,
               };
             });
             //construimos el objet respuesta final con todas las coincidencias
@@ -77,7 +78,7 @@ router.get("/", (req, res) => {
   } else {
     // fetch a la API de los primeros 100 resultados
     axios
-      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_L}&addRecipeInformation=true&number=100`)
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100`)
       .then((response) => {
         const results = response.data.results;
         const allAPIRecipes = results.map((recipe) => {
@@ -91,7 +92,7 @@ router.get("/", (req, res) => {
             dishTypes,
             diets,
             // summary,
-            // healthScore,
+            healthScore,
             // instructions,
           };
           return apiRecipeToHome;
@@ -109,7 +110,7 @@ router.get("/", (req, res) => {
           .then((allDBRecipes) => {
             if (allDBRecipes !== []) {
               const allFilteredDBRecipes = allDBRecipes.map((dbRecipe) => {
-                const { id, name, diets } = dbRecipe;
+                const { id, name, diets, healthScore } = dbRecipe;
 
                 const filteredDiets = diets.map((dietObj) => dietObj.name);
 
@@ -117,6 +118,7 @@ router.get("/", (req, res) => {
                   id,
                   title: name,
                   diets: filteredDiets,
+                  healthScore,
                 };
               });
 
@@ -173,7 +175,7 @@ router.get("/:id", (req, res) => {
       .catch((err) => res.status(400).send({ m: "An error ocurred when searching by UUID in the DB", from: "GET /recipes/:id", err }));
   } else {
     axios
-      .get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=${API_KEY_L}`)
+      .get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=${API_KEY_K}`)
       .then((response) => {
         const { id, image, title, dishTypes, diets, summary, healthScore, instructions } = response.data;
 

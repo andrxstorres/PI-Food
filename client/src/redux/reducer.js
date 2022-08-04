@@ -13,6 +13,7 @@ import {
 const initialState = {
   recipes: [],
   recipesForHome: [],
+  alteredHome: false,
   details: {},
   dbDiets: [],
   newRecipe: {},
@@ -26,6 +27,7 @@ export const reducer = (state = initialState, action) => {
         ...state,
         recipes: [...action.payload],
         recipesForHome: [...action.payload],
+        alteredHome: false,
         noNameMatchError: "",
       };
     case GET_RECIPES_BY_NAME:
@@ -33,6 +35,7 @@ export const reducer = (state = initialState, action) => {
         ...state,
         recipes: [...action.payload],
         recipesForHome: [...action.payload],
+        alteredHome: true,
         noNameMatchError: "",
       };
     case NO_NAME_MATCHES_FOUND:
@@ -59,16 +62,19 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         recipesForHome: [...action.payload],
+        alteredHome: true,
       };
     case SORT_HOME_BY_HEALTHSCORE:
       return {
         ...state,
         recipesForHome: [...action.payload],
+        alteredHome: true,
       };
     case SORT_HOME_ALPHABETICALLY:
       return {
         ...state,
         recipesForHome: [...action.payload],
+        alteredHome: true,
       };
     default:
       return state;

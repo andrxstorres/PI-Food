@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"
 
 export const GET_HOME_RECIPES = "GET_HOME_RECIPES";
 export const GET_RECIPES_BY_NAME = "GET_RECIPES_BY_NAME";

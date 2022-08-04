@@ -6,7 +6,7 @@ export class HomeNavBar extends React.Component {
   render() {
     return (
       <section>
-        <Link to="/create">Create your recipe.</Link>
+        <Link to="/create">Create your own recipe.</Link>
         <SearchBar />
       </section>
     );

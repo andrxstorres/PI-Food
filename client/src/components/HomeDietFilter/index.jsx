@@ -5,7 +5,7 @@ import { getDietsFromDb, filterHomeByDiet } from "../../redux/actions";
 export default function HomeDietFilter({ allHomeRecipes }) {
   const dispatch = useDispatch();
 
-  const [selectedDiet, setSelectedDiet] = useState(null);
+  const [selectedDiet, setSelectedDiet] = useState("gluten free");
 
   useEffect(() => {
     dispatch(getDietsFromDb());
@@ -14,7 +14,7 @@ export default function HomeDietFilter({ allHomeRecipes }) {
   const diets = useSelector((state) => state.dbDiets);
 
   const onChangeHandler = (e) => {
-    setSelectedDiet(() => e);
+    setSelectedDiet(e.target.value);
   };
 
   const dietFilterHandler = (e) => {
@@ -25,8 +25,7 @@ export default function HomeDietFilter({ allHomeRecipes }) {
 
   return (
     <article>
-      <p>Home Diet Filter</p>
-      <form id="dietfilter" onSubmit={dietFilterHandler}>
+       <form id="dietfilter" onSubmit={dietFilterHandler}>
         <select name="dietselector" id="dietselector" form="dietfilter" onChange={onChangeHandler}>
           {diets?.length > 0 &&
             diets.map(({ name: dietName }) => {
@@ -36,15 +35,15 @@ export default function HomeDietFilter({ allHomeRecipes }) {
                 </option>
               );
             })}
-          {/* <option key="none">none</option> */}
         </select>
-        {selectedDiet ? (
+        <button type="submit">Filter by diet types.</button>
+        {/* {selectedDiet ? (
           <button type="submit">Filter by diet types.</button>
         ) : (
           <button type="submit" disabled>
             Filter by diet types.
           </button>
-        )}
+        )} */}
       </form>
     </article>
   );

@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
   } else if (searchByName) {
     //fetch a la API buscando coincidencias de nombre
     axios
-      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_L}&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100&titleMatch=${searchByName}`)
       .then((response) => {
         const { results, totalResults } = response.data;
         const allNameMatchedAPIRecipes = results.map((recipe) => {
@@ -78,7 +78,7 @@ router.get("/", (req, res) => {
   } else {
     // fetch a la API de los primeros 100 resultados
     axios
-      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_L}&addRecipeInformation=true&number=100`)
+      .get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY_K}&addRecipeInformation=true&number=100`)
       .then((response) => {
         const results = response.data.results;
         const allAPIRecipes = results.map((recipe) => {
@@ -175,7 +175,7 @@ router.get("/:id", (req, res) => {
       .catch((err) => res.status(400).send({ m: "An error ocurred when searching by UUID in the DB", from: "GET /recipes/:id", err }));
   } else {
     axios
-      .get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=${API_KEY_L}`)
+      .get(`https://api.spoonacular.com/recipes/${searchId}/information?apiKey=${API_KEY_K}`)
       .then((response) => {
         const { id, image, title, dishTypes, diets, summary, healthScore, instructions } = response.data;
 

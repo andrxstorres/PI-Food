@@ -15,18 +15,24 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Recipehub.</h1>
-      <br />
-      <HomeNavBar />
-      <hr />
-      <HomeFilterBar />
-      <br />
+      <header>
+        <h1>Recipehub.</h1>
+        <br />
+        <HomeNavBar />
+        <hr />
+      </header>
+
       {noNameMatchesFoundError === "NO_NAME_MATCHES_FOUND" ? (
         <nav>
           <p>No recipes match the search.</p>
         </nav>
-      ) : null}
-      <HomeCardsContainer allHomeRecipes={allHomeRecipes} />
+      ) : (
+        <main>
+          <HomeFilterBar />
+          <br />
+          <HomeCardsContainer allHomeRecipes={allHomeRecipes} />
+        </main>
+      )}
     </div>
   );
 }

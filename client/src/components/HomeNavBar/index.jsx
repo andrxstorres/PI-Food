@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 export class HomeNavBar extends React.Component {
   render() {
     return (
-      <section>
+      <div>
         <Link to="/create">Create your own recipe.</Link>
         <SearchBar />
-      </section>
+      </div>
     );
   }
 }

@@ -50,58 +50,64 @@ export default function HomeCardsContainer({ allHomeRecipes }) {
   };
   // numberOfPages - currentPage < 5 ? numberOfPages - currentPage : 5
 
-  //determina si se muestra el botón de reset home
+  //determina si se muestra el botón de restore home
   const alteredHome = useSelector((state) => state.alteredHome);
+  const homeError = useSelector((state) => state.getHomeRecipesError);
 
   const resetHome = () => {
     dispatch(getHomeRecipes());
   };
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
-    <div>
-      {
-        numberOfPages > 0 ? (
-          <div>
-            <button type="button" value="1" onClick={onPageSelect}>
-              First.
-            </button>
-            <button type="button" onClick={goToPrevious}>
-              {"<"}
-            </button>
+    <div key="div1">
+      {numberOfPages > 0 ? (
+        <div key="div2">
+          <button type="button" value="1" key="first" onClick={onPageSelect}>
+            First.
+          </button>
+          <button type="button" key="<" onClick={goToPrevious}>
+            {"<"}
+          </button>
 
-            {getPaginationGroup()?.length > 0 &&
-              getPaginationGroup().map((pageNumber) => {
-                return (
-                  <>
-                    {pageNumber > numberOfPages || pageNumber < 1 ? null : (
-                      <button type="button" key={pageNumber} value={pageNumber} onClick={onPageSelect}>
-                        {pageNumber}
-                      </button>
-                    )}
-                  </>
-                );
-              })}
+          {getPaginationGroup()?.length > 0 &&
+            getPaginationGroup().map((pageNumber) => {
+              return (
+                <>
+                  {pageNumber > numberOfPages || pageNumber < 1 ? null : (
+                    <button type="button" key={pageNumber} value={pageNumber} onClick={onPageSelect}>
+                      {pageNumber}
+                    </button>
+                  )}
+                </>
+              );
+            })}
 
-            <button type="button" onClick={goToNext}>
-              {">"}
-            </button>
-            <button type="button" value={numberOfPages} onClick={onPageSelect}>
-              Last.
-            </button>
-            {/* <p> current page: {currentPage}</p>
+          <button type="button" key=">" onClick={goToNext}>
+            {">"}
+          </button>
+          <button type="button" key="last" value={numberOfPages} onClick={onPageSelect}>
+            Last.
+          </button>
+          {/* <p> current page: {currentPage}</p>
           <p> number of pages: {numberOfPages}</p> */}
-          </div>
-        ) : null
-        //        <div>
-        //          <button disabled>{"<"}</button>
-        //         <button>1</button>
-        //         <button disabled>{">"}</button>
-        //       </div>
-      }
+        </div>
+      ) : (
+        <div key="div3">
+          <button key="a" disabled>
+            {"<"}
+          </button>
+          <button key="b" disabled>
+            1
+          </button>
+          <button key="c" disabled>
+            {">"}
+          </button>
+        </div>
+      )}
 
       {alteredHome && (
-        <button type="button" onClick={resetHome}>
-          Reload home.
+        <button type="button" key="restore" onClick={resetHome}>
+          Restore home.
         </button>
       )}
 
@@ -112,7 +118,13 @@ export default function HomeCardsContainer({ allHomeRecipes }) {
           return <HomeCard key={recipe.id} recipe={recipe} />;
         })
       ) : (
-        <p>No recipes found. Search something else or reload the page.</p>
+        <p>No recipes found.</p>
+      )}
+
+      {homeError === "GET_HOME_RECIPES_ERROR" && (
+        <button type="button" key="reload" onClick={resetHome}>
+          Reload home.
+        </button>
       )}
     </div>
   );

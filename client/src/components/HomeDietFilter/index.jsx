@@ -25,7 +25,7 @@ export default function HomeDietFilter({ allHomeRecipes }) {
 
   return (
     <article>
-       <form id="dietfilter" onSubmit={dietFilterHandler}>
+      <form id="dietfilter" onSubmit={dietFilterHandler}>
         <select name="dietselector" id="dietselector" form="dietfilter" onChange={onChangeHandler}>
           {diets?.length > 0 &&
             diets.map(({ name: dietName }) => {
@@ -36,7 +36,7 @@ export default function HomeDietFilter({ allHomeRecipes }) {
               );
             })}
         </select>
-        <button type="submit">Filter by diet types.</button>
+        <button type="submit">Filter by diet.</button>
         {/* {selectedDiet ? (
           <button type="submit">Filter by diet types.</button>
         ) : (

@@ -1,11 +1,18 @@
-import axios from "axios"
+import axios from "axios";
 
 export const GET_HOME_RECIPES = "GET_HOME_RECIPES";
+export const GET_HOME_RECIPES_ERROR = "GET_HOME_RECIPES_ERROR";
+
 export const GET_RECIPES_BY_NAME = "GET_RECIPES_BY_NAME";
 export const NO_NAME_MATCHES_FOUND = "NO_NAME_MATCHES_FOUND";
+
 export const GET_DETAIL_BY_ID = "GET_DETAIL_BY_ID";
+
 export const GET_DIETS_FROM_DB = "GET_DIETS_FROM_DB";
+
 export const POST_RECIPE_IN_DB = "POST_RECIPE_IN_DB";
+export const POST_ERROR = "POST_ERROR";
+
 export const FILTER_HOME_BY_DIET = "FILTER_HOME_BY_DIET";
 export const SORT_HOME_BY_HEALTHSCORE = "SORT_HOME_BY_HEALTHSCORE";
 export const SORT_HOME_ALPHABETICALLY = "SORT_HOME_ALPHABETICALLY";
@@ -21,7 +28,13 @@ export const getHomeRecipes = () => {
           payload: response.data,
         });
       })
-      .catch((err) => console.log({ m: "An error ocurred in action creator getHomeRecipes", err }));
+      .catch((err) => {
+        console.log({ m: "GET_HOME_RECIPES_ERROR", err });
+        dispatch({
+          type: GET_HOME_RECIPES_ERROR,
+          payload: "GET_HOME_RECIPES_ERROR",
+        });
+      });
   };
 };
 
@@ -88,7 +101,13 @@ export const postRecipeInDb = (formState) => {
           payload: response.data,
         });
       })
-      .catch((err) => console.log({ m: "Something went wrong on postRecipeInDb action creator", err }));
+      .catch((err) => {
+        console.log({ m: "Something went wrong on postRecipeInDb action creator", err });
+        dispatch({
+          type: POST_ERROR,
+          payload: err.response.data.err.name,
+        });
+      });
   };
 };
 

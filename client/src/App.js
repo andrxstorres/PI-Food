@@ -7,7 +7,7 @@ import Create from "./pages/Create";
 
 function App() {
   return (
-    <>
+    <div className="App">
       <Route path={"/"} exact>
         <Landing />
       </Route>
@@ -20,7 +20,7 @@ function App() {
       <Route path={"/create"} exact>
         <Create />
       </Route>
-    </>
+    </div>
   );
 }
 

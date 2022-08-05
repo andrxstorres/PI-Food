@@ -18,11 +18,7 @@ export default function CreateForm({ diets }) {
   const { name, summary, steps, healthScore } = formState;
 
   const lastCreatedRecipe = useSelector((state) => state.newRecipe);
-
-  // let emptyTitle = false;
-  // let emptySummary = false;
-  // let emptyHealthScore = false;
-  // let emptySteps = false;
+  const postError = useSelector((state) => state.postError);
 
   const onChangeHandler = (e) => {
     setFormState((prevState) => {
@@ -54,7 +50,7 @@ export default function CreateForm({ diets }) {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    if (healthScore <= 100) dispatch(postRecipeInDb(formState));
+    if (name && name.length < 140 && healthScore <= 100 && healthScore >= 0) dispatch(postRecipeInDb(formState));
   };
 
   if (lastCreatedRecipe.name === name && lastCreatedRecipe.summary === summary && lastCreatedRecipe.steps === steps) history.push(`/details/${lastCreatedRecipe.id}`);
@@ -75,7 +71,7 @@ export default function CreateForm({ diets }) {
         <br />
         <input type="number" id="healthScore" name="healthScore" min="1" max="100" onChange={onChangeHandler} />
         {healthScore > 100 && <p>The health score must be an integer number between 0 and 100</p>}
-        {healthScore < 0 && <p>The health score must be an integer number between 0 and 100</p>}
+        {healthScore <= 0 && <p>The health score must be an integer number between 1 and 100</p>}
         <br />
 
         <label htmlFor="diets">Select wich diets this recipe is suitable for:</label>
@@ -110,13 +106,14 @@ export default function CreateForm({ diets }) {
         <textarea id="steps" name="steps" placeholder="What should you do to get ready for this dish? You can start there..." required onChange={onChangeHandler} />
         <br />
 
-        {name === "" || name.length > 140 || summary === "" || healthScore === null || healthScore <= 0 || healthScore > 100 || steps === "" ? (
+        {name === "" || name.length > 140 || summary === "" || healthScore === null || healthScore < 0 || healthScore > 100 || steps === "" ? (
           <button type="submit" disabled>
             Finish.
           </button>
         ) : (
           <button type="submit">Finish.</button>
         )}
+        {postError === "SequelizeUniqueConstraintError" && <span> You summary its exactly like one from another recipe! Try to make it more personal.</span>}
       </form>
     </section>
   );

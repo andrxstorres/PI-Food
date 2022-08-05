@@ -42,7 +42,7 @@ export default function HomeAlphabeticFilter({ allHomeRecipes }) {
       <form id="sortByHS" onSubmit={onSubmitHandler}>
         <select from="sortByHS" onChange={onChangeHandler}>
           <option id="defaultOption" disabled selected>
-            Choose an order.
+            Order alphabetically.
           </option>
           <option value="upwards" id="upwards">
             A - Z
@@ -52,10 +52,10 @@ export default function HomeAlphabeticFilter({ allHomeRecipes }) {
           </option>
         </select>
         {sortOption ? (
-          <button type="submit">Sort alphabetically.</button>
+          <button type="submit">Sort.</button>
         ) : (
           <button type="submit" disabled>
-            Sort alphabetically.
+            Sort.
           </button>
         )}
       </form>

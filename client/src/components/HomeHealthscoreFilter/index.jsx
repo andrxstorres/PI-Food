@@ -26,7 +26,7 @@ export default function HomeHealthscoreFilter({ allHomeRecipes }) {
       <form id="sortByHS" onSubmit={onSubmitHandler}>
         <select from="sortByHS" onChange={onChangeHandler}>
           <option id="defaultOption" disabled selected>
-            Choose an order.
+            Order by health score.
           </option>
           <option value="downwards" id="downwards">
             Downwards.
@@ -39,7 +39,7 @@ export default function HomeHealthscoreFilter({ allHomeRecipes }) {
           <button type="submit">Sort by health score.</button>
         ) : (
           <button type="submit" disabled>
-            Sort by health score.
+            Sort.
           </button>
         )}
       </form>

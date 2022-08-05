@@ -1,10 +1,12 @@
 import {
   GET_HOME_RECIPES,
+  GET_HOME_RECIPES_ERROR,
   GET_RECIPES_BY_NAME,
   NO_NAME_MATCHES_FOUND,
   GET_DETAIL_BY_ID,
   GET_DIETS_FROM_DB,
   POST_RECIPE_IN_DB,
+  POST_ERROR,
   FILTER_HOME_BY_DIET,
   SORT_HOME_BY_HEALTHSCORE,
   SORT_HOME_ALPHABETICALLY,
@@ -17,7 +19,9 @@ const initialState = {
   details: {},
   dbDiets: [],
   newRecipe: {},
+  getHomeRecipesError: "",
   noNameMatchError: "",
+  postError: "",
 };
 
 export const reducer = (state = initialState, action) => {
@@ -29,6 +33,11 @@ export const reducer = (state = initialState, action) => {
         recipesForHome: [...action.payload],
         alteredHome: false,
         noNameMatchError: "",
+      };
+    case GET_HOME_RECIPES_ERROR:
+      return {
+        ...state,
+        getHomeRecipesError: action.payload,
       };
     case GET_RECIPES_BY_NAME:
       return {
@@ -57,6 +66,11 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         newRecipe: { ...action.payload },
+      };
+    case POST_ERROR:
+      return {
+        ...state,
+        postError: action.payload,
       };
     case FILTER_HOME_BY_DIET:
       return {

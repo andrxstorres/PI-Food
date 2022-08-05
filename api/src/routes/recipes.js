@@ -198,7 +198,33 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const { name, summary, healthScore, steps, diets } = req.body;
   //healthScore no puede exceder a 999999999, debe ser menor o SQL no guarda los datos.
-  if (typeof name === `string` && name !== `` && typeof summary === `string` && summary !== ``) {
+
+  // switch (req.body) {
+  //   case req.body.healthScore > 100 || req.body.healthScore < 0:
+  //     return res.status(400).send({ m: `'/recipes' POST route received a health score that's not between 0 and 100.` });
+  //   case req.body.diets || !Array.isArray(req.body.diets):
+  //     return res.status(400).send({ m: `'/recipes' POST route didn't received an array as 'diets'.` });
+  //   case req.body.diets ||
+  //     req.body.diets.filter(
+  //       (diet) =>
+  //         diet === "gluten free" ||
+  //         diet === "ketogenic" ||
+  //         diet === "vegetarian" ||
+  //         diet === "lacto ovo vegetarian" ||
+  //         diet === "vegan" ||
+  //         diet === "pescatarian" ||
+  //         diet === "paleolithic" ||
+  //         diet === "primal" ||
+  //         diet === "fodmap friendly" ||
+  //         diet === "whole 30"
+  //     ).length > 0:
+  //     return res.status(400).send({ m: `'/recipes' POST route received an array with wrong values inside as 'diets'.` });
+  //   default:
+  //     break;
+  // }
+
+  // && steps.legth < 10485760
+  if (name && typeof name === `string` && name.length <= 140 && summary && typeof summary === `string` && summary.length <= 2100) {
     Recipe.create({
       name,
       summary,
@@ -247,7 +273,13 @@ router.post("/", (req, res) => {
       })
       .catch((err) => res.status(400).send({ m: `Error when creating ${name}'s recipe in DB`, from: "POST /recipes", err }));
   } else {
-    res.status(400).send({ m: `'/recipes' POST route received a wrong or empty name or summary.` });
+    if (!name || typeof name !== `string` || name.length > 140 || !summary || typeof summary !== `string` || summary.length > 2100) {
+      return res.status(400).send({ m: `'/recipes' POST route received a wrong/empty name or summary.` });
+    } else if (steps.legth < 10485760) {
+      return res.status(400).send({ m: `'/recipes' POST route received a realy long string as 'steps'.` });
+    } else if (healthScore <= 100 || healthScore >= 0) {
+      return res.status(400).send();
+    }
   }
 });
 

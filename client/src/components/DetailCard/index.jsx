@@ -1,7 +1,7 @@
 import sustituteImage from "../../media/images/empty_plate_square.jpg";
 
 export default function DetailCard({ details }) {
-  const { image, dishTypes, diets, summary, healthScore, steps } = details;
+  const { id, image, dishTypes, diets, summary, healthScore, steps } = details;
 
   return (
     <main>
@@ -30,17 +30,36 @@ export default function DetailCard({ details }) {
         {healthScore && <p>Health Score: {healthScore}</p>}
       </section>
 
-      {summary && (
-        <section>
-          <header>Summary:</header>
-          <p>{summary}</p>
-        </section>
-      )}
-      {steps && (
-        <section>
-          <header>Step by step:</header>
-          <p>{steps}</p>
-        </section>
+      {isNaN(id) ? (
+        <div>
+          {summary && (
+            <section>
+              <header>Summary:</header>
+              <p>{<div dangerouslySetInnerHTML={{ __html: summary }} />}</p>
+            </section>
+          )}
+          {steps && (
+            <section>
+              <header>Step by step:</header>
+              <p>{<div dangerouslySetInnerHTML={{ __html: steps }} />}</p>
+            </section>
+          )}
+        </div>
+      ) : (
+        <div>
+          {summary && (
+            <section>
+              <header>Summary:</header>
+              <p>{<div dangerouslySetInnerHTML={{ __html: summary }} />}</p>
+            </section>
+          )}
+          {steps && (
+            <section>
+              <header>Step by step:</header>
+              <p>{<div dangerouslySetInnerHTML={{ __html: steps }} />}</p>
+            </section>
+          )}
+        </div>
       )}
     </main>
   );
